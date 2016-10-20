@@ -326,13 +326,15 @@ if (! empty($where)) {
 }
 
 $num_items = $db->query('SELECT COUNT(*) FROM ' . $from)->fetchColumn();
+$url_download = parse_url($_SERVER['REQUEST_URI']);
+$url_download = str_replace('items', 'msexcel', $url_download['query']);
 
 $xtpl = new XTemplate($op . '.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
 $xtpl->assign('LANG', $lang_module);
 $xtpl->assign('GLANG', $lang_global);
 $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', $op);
-$xtpl->assign('URL_DOWNLOAD', NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=' . $op . '&amp;download=1');
+$xtpl->assign('URL_DOWNLOAD', NV_BASE_ADMINURL . 'index.php?' . $url_download . '&download=1');
 $xtpl->assign('URL_IMPORT', NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=' . $op . '&amp;import=1');
 
 // Loai san pham
