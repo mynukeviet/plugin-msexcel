@@ -25,7 +25,6 @@ if ($nv_Request->isset_request('import', 'get')) {
     if ($nv_Request->isset_request('perform', 'post')) {
         $file = $nv_Request->get_title('file', 'post', '');
         
-        $file = NV_ROOTDIR . '/Danh-sach-san-pham.xlsx';
         if (empty($file)) {
             die('NO_' . $lang_module['phpexcel_required_file']);
         } elseif (! file_exists($file)) {
