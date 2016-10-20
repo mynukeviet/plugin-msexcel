@@ -209,7 +209,7 @@
 </blockquote>
 
 <div class="well">
-	<form action="{ACTION}" method="post">
+	<form action="{ACTION}" id="frm-import" method="post" enctype="multipart/form-data">
 		<div class="row">
 			<div class="col-xs-4">
 				<div class="input-group">
@@ -222,7 +222,7 @@
 				<input type="file" name="upload_fileupload" id="upload_fileupload" style="display: none" />
 			</div>
 			<div class="col-xs-20">
-				<button class="btn btn-primary btn-sm" id="btn-perform" disabled="disabled"><em class="fa fa-check">&nbsp;</em>{LANG.perform}</button>
+				<button type="submit" class="btn btn-primary btn-sm" id="btn-perform" disabled="disabled"><em class="fa fa-check">&nbsp;</em>{LANG.perform}</button>
 			</div>
 		</div>
 	</form>
@@ -256,13 +256,16 @@ $('#upload_fileupload').change(function(){
     $('#btn-perform').prop('disabled', false);
 });
 
-$('#btn-perform').click(function(e){
+$('#frm-import').submit(function(e){
 	e.preventDefault();
-	var $this = $(this);
+	var $this = $('#btn-perform');
+
 	$.ajax({
-		url: script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=msexcel&import=1&nocache=' + new Date().getTime(),
+		url: script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=msexcel&import=1&perform=1&nocache=' + new Date().getTime(),
 		type: 'post',
-		data: 'perform=1&file=' + $('#upload_fileupload').val(),
+		data: new FormData($('#frm-import')[0]),
+		processData: false,
+		contentType: false,
 		beforeSend: function() {
 			$this.find('em').replaceWith('<em class="fa fa-circle-o-notch fa-spin">&nbsp;</em>');
 			$this.find('em').prop('disabled', true);
@@ -295,7 +298,6 @@ $('#btn-perform').click(function(e){
 			}       
 		}
 	});
-	e.preventDefault(); 
 });
 </script>
 <!-- END: import -->

@@ -22,18 +22,19 @@ if (! class_exists('PHPExcel')) {
 
 if ($nv_Request->isset_request('import', 'get')) {
     
-    if ($nv_Request->isset_request('perform', 'post')) {
-        $file = $nv_Request->get_title('file', 'post', '');
+    if ($nv_Request->isset_request('perform', 'post,get')) {
         
-        if (empty($file)) {
+        if (! isset($_FILES['upload_fileupload'])) {
             die('NO_' . $lang_module['phpexcel_required_file']);
-        } elseif (! file_exists($file)) {
+        } elseif (! is_uploaded_file($_FILES['upload_fileupload']['tmp_name'])) {
             die('NO_' . $lang_module['phpexcel_file_not_exists']);
         }
         
-        $objPHPExcel = PHPExcel_IOFactory::load($file);
+        $objPHPExcel = PHPExcel_IOFactory::load($_FILES['upload_fileupload']['tmp_name']);
         $objWorksheet = $objPHPExcel->setActiveSheetIndex(0);
         $highestRow = $objWorksheet->getHighestRow();
+        
+        @unlink($_FILES['upload_fileupload']['tmp_name']);
         
         $startCol = 'A';
         $startRow = 4;
