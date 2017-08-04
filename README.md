@@ -19,9 +19,9 @@ composer require phpoffice/phpexcel
 - **Truy cập ACP / Sản phẩm**. Lúc này xẽ xuất hiện thêm menu **Nhập / xuất Excel**
 
 ## Thông tin khác
-- Diễn đàn hỗ trợ: https://mynukeviet.net/hoi-dap/Ho-tro-su-dung-NukeViet/Ho-tro-plugin-nhap-xuat-san-pham-qua-Excel-259/
-- Tài trợ:
- - **CÔNG TY TNHH PHÁT TRIỂN VÀ DỊCH VỤ NGUỒN MỞ THUẬN ĐỨC**
- - **Website:** www.tdfoss.vn
- - **Email:** contact@tdfoss.vn
- - **Điện thoại:** 02336.270.610
+- **Diễn đàn hỗ trợ:** https://mynukeviet.net/hoi-dap/Ho-tro-su-dung-NukeViet/Ho-tro-plugin-nhap-xuat-san-pham-qua-Excel-259/
+- **Tài trợ:**
+  - **CÔNG TY TNHH PHÁT TRIỂN VÀ DỊCH VỤ NGUỒN MỞ THUẬN ĐỨC**
+  - **Website:** www.tdfoss.vn
+  - **Email:** contact@tdfoss.vn
+  - **Điện thoại:** 02336.270.610
