@@ -15,7 +15,7 @@ composer require phpoffice/phpexcel
 - Đổi tên thư mục `Classes` vừa copy thành `class`. Chúng ta sẽ có `includes/class/PHPExcel.php`
 
 ### Cài đặt plugin
-- Downnload giải nén vào thư mục tương ứng
+- Downnload giải nén hai thư mục `modules` và `themes` (chỉ hai thư mục này) vào thư mục tương ứng
 - **Truy cập ACP / Sản phẩm**. Lúc này xẽ xuất hiện thêm menu **Nhập / xuất Excel**
 
 ## Thông tin khác
