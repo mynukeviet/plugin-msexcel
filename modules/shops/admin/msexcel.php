@@ -13,6 +13,10 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 
 $page_title = $lang_module['content_list'];
 
+if (!class_exists('PHPExcel') and file_exists(NV_ROOTDIR . '/includes/class/PHPExcel.php')) {
+    require_once NV_ROOTDIR . '/includes/class/PHPExcel.php';
+}
+
 if (!class_exists('PHPExcel')) {
     $contents = nv_theme_alert($lang_module['phpexcel_not_exists_title'], $lang_module['phpexcel_not_exists_content'], 'danger');
     include NV_ROOTDIR . '/includes/header.php';
@@ -21,25 +25,25 @@ if (!class_exists('PHPExcel')) {
 }
 
 if ($nv_Request->isset_request('import', 'get')) {
-    
+
     if ($nv_Request->isset_request('perform', 'post,get')) {
-        
+
         if (!isset($_FILES['upload_fileupload'])) {
             die('NO_' . $lang_module['phpexcel_required_file']);
         } elseif (!is_uploaded_file($_FILES['upload_fileupload']['tmp_name'])) {
             die('NO_' . $lang_module['phpexcel_file_not_exists']);
         }
-        
+
         $objPHPExcel = PHPExcel_IOFactory::load($_FILES['upload_fileupload']['tmp_name']);
         $objWorksheet = $objPHPExcel->setActiveSheetIndex(0);
         $highestRow = $objWorksheet->getHighestRow();
-        
+
         @unlink($_FILES['upload_fileupload']['tmp_name']);
-        
+
         $startCol = 'A';
         $startRow = 4;
         $highestColumn = 'L';
-        
+
         $array_field = array(
             'id',
             'listcatid',
@@ -54,7 +58,7 @@ if ($nv_Request->isset_request('import', 'get')) {
             'weight_unit',
             'discount_id'
         );
-        
+
         $array_data = array();
         for ($row = $startRow; $row <= $highestRow; $row++) {
             $i = $col = 0;
@@ -64,7 +68,7 @@ if ($nv_Request->isset_request('import', 'get')) {
                 $col++;
             }
         }
-        
+
         $array_error = array();
         foreach ($array_data as $data) {
             $error = array(
@@ -73,7 +77,7 @@ if ($nv_Request->isset_request('import', 'get')) {
                 'code' => $data['product_code'],
                 'title' => $data[NV_LANG_DATA . '_title']
             );
-            
+
             if (empty($data['listcatid']) or !is_numeric($data['listcatid'])) {
                 $error['message'] = $lang_module['phpexcel_required_listcatid'];
                 $array_error[] = $error;
@@ -81,32 +85,32 @@ if ($nv_Request->isset_request('import', 'get')) {
                 $error['message'] = $lang_module['phpexcel_isset_listcatid'];
                 $array_error[] = $error;
             }
-            
+
             if (empty($data[NV_LANG_DATA . '_title'])) {
                 $error['message'] = $lang_module['phpexcel_required_title'];
                 $array_error[] = $error;
             }
-            
+
             if (empty($data['product_number']) or $data['product_number'] < 0) {
                 $error['message'] = $lang_module['phpexcel_required_number'];
                 $array_error[] = $error;
             }
-            
+
             if (!is_numeric($data['product_price'])) {
                 $error['message'] = $lang_module['phpexcel_required_price'];
                 $array_error[] = $error;
             }
-            
+
             if (!isset($money_config[$data['money_unit']])) {
                 $error['message'] = $lang_module['phpexcel_isset_money_unit'];
                 $array_error[] = $error;
             }
         }
-        
+
         if (!empty($array_error)) {
             die(json_encode($array_error));
         }
-        
+
         foreach ($array_data as $data) {
             try {
                 $stmt = $db->prepare('UPDATE ' . $db_config['prefix'] . '_' . $module_data . '_rows SET
@@ -122,7 +126,7 @@ if ($nv_Request->isset_request('import', 'get')) {
                 weight_unit = :weight_unit,
                 discount_id = :discount_id
                 WHERE id=' . $data['id']);
-                
+
                 $stmt->bindParam(':listcatid', $data['listcatid'], PDO::PARAM_INT);
                 $stmt->bindParam(':product_code', $data['product_code'], PDO::PARAM_STR);
                 $stmt->bindParam(':title', $data[NV_LANG_DATA . '_title'], PDO::PARAM_STR);
@@ -141,16 +145,16 @@ if ($nv_Request->isset_request('import', 'get')) {
         }
         die('OK');
     }
-    
+
     $xtpl = new XTemplate($op . '.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
     $xtpl->assign('LANG', $lang_module);
     $xtpl->assign('ACTION', NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=' . $op . '&import=1');
-    
+
     $xtpl->parse('import');
     $contents = $xtpl->text('import');
-    
+
     $page_title = $lang_module['import'];
-    
+
     include NV_ROOTDIR . '/includes/header.php';
     echo nv_admin_theme($contents);
     include NV_ROOTDIR . '/includes/footer.php';
@@ -254,12 +258,12 @@ if ($checkss == md5(session_id())) {
     } elseif (!empty($q)) {
         $sql = "SELECT userid FROM " . NV_USERS_GLOBALTABLE . " WHERE userid IN (SELECT admin_id FROM " . NV_AUTHORS_GLOBALTABLE . ") AND username LIKE '%" . $db->dblikeescape($q) . "%' OR first_name LIKE '%" . $db->dblikeescape($q) . "%'OR last_name LIKE '%" . $db->dblikeescape($q) . "%'";
         $result = $db->query($sql);
-        
+
         $array_admin_id = array();
         while (list ($admin_id) = $result->fetch(3)) {
             $array_admin_id[] = $admin_id;
         }
-        
+
         $arr_from = array();
         $arr_from[] = "(product_code LIKE '%" . $db->dblikeescape($qhtml) . "%')";
         foreach ($array_in_rows as $val) {
@@ -271,7 +275,7 @@ if ($checkss == md5(session_id())) {
         }
         $from .= ' )';
     }
-    
+
     // Tim theo loai san pham
     if (!empty($catid)) {
         if (empty($q)) {
@@ -279,7 +283,7 @@ if ($checkss == md5(session_id())) {
         } else {
             $from .= ' AND';
         }
-        
+
         if ($global_array_shops_cat[$catid]['numsubcat'] == 0) {
             $from .= ' listcatid=' . $catid;
         } else {
@@ -288,7 +292,7 @@ if ($checkss == md5(session_id())) {
             $from .= ' listcatid IN (' . implode(',', $array_cat) . ')';
         }
     }
-    
+
     // Tim theo ngay thang
     if (!empty($from_time)) {
         if (empty($q) and empty($catid)) {
@@ -296,23 +300,23 @@ if ($checkss == md5(session_id())) {
         } else {
             $from .= ' AND';
         }
-        
+
         if (!empty($from_time) and preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $from_time, $m)) {
             $time = mktime(0, 0, 0, $m[2], $m[1], $m[3]);
         } else {
             $time = NV_CURRENTTIME;
         }
-        
+
         $from .= ' publtime >= ' . $time . '';
     }
-    
+
     if (!empty($to_time)) {
         if (empty($q) and empty($catid) and empty($from_time)) {
             $from .= ' WHERE';
         } else {
             $from .= ' AND';
         }
-        
+
         if (!empty($to_time) and preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $to_time, $m)) {
             $to = mktime(23, 59, 59, $m[2], $m[1], $m[3]);
         } else {
@@ -350,7 +354,7 @@ foreach ($global_array_shops_cat as $cat) {
         }
         $xtitle_i .= $cat['title'];
         $cat['title'] = $xtitle_i;
-        
+
         $cat['selected'] = $cat['catid'] == $catid ? ' selected="selected"' : '';
         $xtpl->assign('CATID', $cat);
         $xtpl->parse('main.catid');
@@ -448,40 +452,40 @@ if (!$is_download) {
         ->limit($per_page)
         ->offset(($page - 1) * $per_page);
     $result = $db->query($db->sql());
-    
+
     $a = 0;
     while (list ($id, $listcatid, $admin_id, $homeimgfile, $homeimgthumb, $title, $alias, $hitstotal, $status, $edittime, $publtime, $exptime, $product_number, $product_price, $money_unit, $product_unit, $num_sell, $username) = $result->fetch(3)) {
         $publtime = nv_date('H:i d/m/y', $publtime);
         $edittime = nv_date('H:i d/m/y', $edittime);
         $title = nv_clean60($title);
-        
+
         $catid_i = 0;
         if ($catid > 0) {
             $catid_i = $catid;
         } else {
             $catid_i = $listcatid;
         }
-        
+
         // Xac dinh anh nho
         if ($homeimgthumb == 1) {
             // image thumb
-            
+
             $thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_upload . '/' . $homeimgfile;
             $imghome = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
         } elseif ($homeimgthumb == 2) {
             // image file
-            
+
             $imghome = $thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
         } elseif ($homeimgthumb == 3) {
             // image url
-            
+
             $imghome = $thumb = $homeimgfile;
         } elseif (file_exists(NV_ROOTDIR . '/themes/' . $theme . '/images/' . $module_file . '/no-image.jpg')) {
             $imghome = $thumb = NV_BASE_SITEURL . 'themes/' . $theme . '/images/' . $module_file . '/no-image.jpg';
         } else {
             $imghome = $thumb = NV_BASE_SITEURL . 'themes/default/images/' . $module_file . '/no-image.jpg';
         }
-        
+
         $xtpl->assign('ROW', array(
             'id' => $id,
             'link' => NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=' . $global_array_shops_cat[$catid_i]['alias'] . '/' . $alias . $global_config['rewrite_exturl'],
@@ -505,39 +509,39 @@ if (!$is_download) {
             'link_edit' => nv_link_edit_page($id),
             'link_delete' => nv_link_delete_page($id)
         ));
-        
+
         if ($num_sell > 0) {
             $xtpl->parse('main.loop.seller');
         } else {
             $xtpl->parse('main.loop.seller_empty');
         }
-        
+
         // Hien thi nhap kho
         if ($pro_config['active_warehouse']) {
             $xtpl->parse('main.loop.warehouse_icon');
         }
-        
+
         $xtpl->parse('main.loop');
-        
+
         ++$a;
     }
-    
+
     $xtpl->assign('COUNT_PRODUCT', sprintf($lang_module['count_product'], $a, $num_items));
 } else {
-    
+
     $array_data = array();
-    
+
     $db->sqlreset()
         ->select('*')
         ->from($from)
         ->order($ord_sql);
     $result = $db->query($db->sql());
-    
+
     $a = 0;
     while ($row = $result->fetch()) {
         $array_data[] = $row;
     }
-    
+
     if (!empty($array_data)) {
         $type = 'xlsx';
         $array_title = array(
@@ -555,15 +559,15 @@ if (!$is_download) {
             'weight_unit' => $lang_module['weight_unit'],
             'discount_id' => $lang_module['phpexcel_discount']
         );
-        
+
         $array = array(
             'objType' => 'Excel2007',
             'objExt' => 'xlsx'
         );
-        
+
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0);
-        
+
         // Set properties
         $objPHPExcel->getProperties()
             ->setCreator($admin_info['username'])
@@ -572,17 +576,17 @@ if (!$is_download) {
             ->setSubject($lang_module['content_list'])
             ->setDescription($lang_module['content_list'])
             ->setCategory($module_name);
-        
+
         $columnIndex = 0; // Cot bat dau ghi du lieu
         $rowIndex = 3; // Dong bat dau ghi du lieu
-        
+
         // Tieu de cot
         $col = $columnIndex;
         foreach ($array_title as $title) {
             $objPHPExcel->getActiveSheet()->setCellValue(PHPExcel_Cell::stringFromColumnIndex($col) . $rowIndex, $title);
             $col++;
         }
-        
+
         // Hien thi danh sach cau tra loi
         $i = $rowIndex + 1;
         $number = 1;
@@ -596,13 +600,13 @@ if (!$is_download) {
             }
             $i++;
         }
-        
+
         $highestRow = $i - 1;
         $highestColumn = PHPExcel_Cell::stringFromColumnIndex($j - 1);
-        
+
         // Rename sheet
         $objPHPExcel->getActiveSheet()->setTitle('Sheet 1');
-        
+
         // Set page orientation and size
         $objPHPExcel->getActiveSheet()
             ->getPageSetup()
@@ -610,7 +614,7 @@ if (!$is_download) {
         $objPHPExcel->getActiveSheet()
             ->getPageSetup()
             ->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
-        
+
         // Excel title
         $objPHPExcel->getActiveSheet()->mergeCells('A2:' . $highestColumn . '2');
         $objPHPExcel->getActiveSheet()->setCellValue('A2', strtoupper($lang_module['content_list']));
@@ -622,7 +626,7 @@ if (!$is_download) {
             ->getStyle('A2')
             ->getAlignment()
             ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-        
+
         // Set color
         $styleArray = array(
             'borders' => array(
@@ -637,24 +641,24 @@ if (!$is_download) {
         $objPHPExcel->getActiveSheet()
             ->getStyle('A3' . ':' . $highestColumn . $highestRow)
             ->applyFromArray($styleArray);
-        
+
         // Set font size
         $objPHPExcel->getActiveSheet()
             ->getStyle("A1:" . $highestColumn . $highestRow)
             ->getFont()
             ->setSize(13);
-        
+
         // Set auto column width
         foreach (range('A', $highestColumn) as $columnID) {
             $objPHPExcel->getActiveSheet()
                 ->getColumnDimension($columnID)
                 ->setAutoSize(true);
         }
-        
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $array['objType']);
         $file_src = NV_ROOTDIR . NV_BASE_SITEURL . NV_TEMP_DIR . '/' . change_alias($lang_module['content_list']) . '.' . $array['objExt'];
         $objWriter->save($file_src);
-        
+
         $download = new NukeViet\Files\Download($file_src, NV_ROOTDIR . NV_BASE_SITEURL . NV_TEMP_DIR);
         $download->download_file();
         die();
