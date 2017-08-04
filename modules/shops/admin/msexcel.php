@@ -2,18 +2,18 @@
 
 /**
  * @Project NUKEVIET 4.x
- * @Author VINADES.,JSC (contact@vinades.vn)
- * @Copyright (C) 2014 VINADES.,JSC. All rights reserved
+ * @Author MyNukeViet (contact@mynukeviet.com)
+ * @Copyright (C) 2016 MyNukeViet. All rights reserved
  * @License GNU/GPL version 2 or any later version
- * @Createdate 9-8-2010 14:43
+ * @Createdate 9-8-2016 14:43
  */
-if (! defined('NV_IS_FILE_ADMIN')) {
+if (!defined('NV_IS_FILE_ADMIN')) {
     die('Stop!!!');
 }
 
 $page_title = $lang_module['content_list'];
 
-if (! class_exists('PHPExcel')) {
+if (!class_exists('PHPExcel')) {
     $contents = nv_theme_alert($lang_module['phpexcel_not_exists_title'], $lang_module['phpexcel_not_exists_content'], 'danger');
     include NV_ROOTDIR . '/includes/header.php';
     echo nv_admin_theme($contents);
@@ -24,9 +24,9 @@ if ($nv_Request->isset_request('import', 'get')) {
     
     if ($nv_Request->isset_request('perform', 'post,get')) {
         
-        if (! isset($_FILES['upload_fileupload'])) {
+        if (!isset($_FILES['upload_fileupload'])) {
             die('NO_' . $lang_module['phpexcel_required_file']);
-        } elseif (! is_uploaded_file($_FILES['upload_fileupload']['tmp_name'])) {
+        } elseif (!is_uploaded_file($_FILES['upload_fileupload']['tmp_name'])) {
             die('NO_' . $lang_module['phpexcel_file_not_exists']);
         }
         
@@ -56,12 +56,12 @@ if ($nv_Request->isset_request('import', 'get')) {
         );
         
         $array_data = array();
-        for ($row = $startRow; $row <= $highestRow; $row ++) {
+        for ($row = $startRow; $row <= $highestRow; $row++) {
             $i = $col = 0;
-            for ($column = $startCol; $column <= $highestColumn; $column ++) {
+            for ($column = $startCol; $column <= $highestColumn; $column++) {
                 $col_field = $array_field[$col];
                 $array_data[$row][$col_field] = $objWorksheet->getCellByColumnAndRow($col, $row)->getValue();
-                $col ++;
+                $col++;
             }
         }
         
@@ -74,10 +74,10 @@ if ($nv_Request->isset_request('import', 'get')) {
                 'title' => $data[NV_LANG_DATA . '_title']
             );
             
-            if (empty($data['listcatid']) or ! is_numeric($data['listcatid'])) {
+            if (empty($data['listcatid']) or !is_numeric($data['listcatid'])) {
                 $error['message'] = $lang_module['phpexcel_required_listcatid'];
                 $array_error[] = $error;
-            } elseif (! isset($global_array_shops_cat[$data['listcatid']])) {
+            } elseif (!isset($global_array_shops_cat[$data['listcatid']])) {
                 $error['message'] = $lang_module['phpexcel_isset_listcatid'];
                 $array_error[] = $error;
             }
@@ -92,18 +92,18 @@ if ($nv_Request->isset_request('import', 'get')) {
                 $array_error[] = $error;
             }
             
-            if (! is_numeric($data['product_price'])) {
+            if (!is_numeric($data['product_price'])) {
                 $error['message'] = $lang_module['phpexcel_required_price'];
                 $array_error[] = $error;
             }
             
-            if (! isset($money_config[$data['money_unit']])) {
+            if (!isset($money_config[$data['money_unit']])) {
                 $error['message'] = $lang_module['phpexcel_isset_money_unit'];
                 $array_error[] = $error;
             }
         }
         
-        if (! empty($array_error)) {
+        if (!empty($array_error)) {
             die(json_encode($array_error));
         }
         
@@ -194,7 +194,7 @@ $order = $nv_Request->get_string('order', 'get') == 'asc' ? 'asc' : 'desc';
 
 $listcatid = $nv_Request->get_int('listcatid', 'get');
 $where = '';
-if (! empty($listcatid)) {
+if (!empty($listcatid)) {
     if (isset($global_array_shops_cat[$listcatid])) {
         $subcatid = $global_array_shops_cat[$listcatid]['subcatid'];
         $where = 'listcatid=' . $listcatid;
@@ -224,11 +224,11 @@ $array_in_ordername = array(
     'num_sell'
 );
 
-if (! in_array($stype, array_keys($array_search))) {
+if (!in_array($stype, array_keys($array_search))) {
     $stype = '-';
 }
 
-if (! in_array($ordername, array_keys($array_in_ordername))) {
+if (!in_array($ordername, array_keys($array_in_ordername))) {
     $ordername = 'id';
 }
 
@@ -241,9 +241,9 @@ if ($checkss == md5(session_id())) {
     // Tim theo tu khoa
     if ($stype == 'product_code') {
         $from .= " WHERE product_code LIKE '%" . $db->dblikeescape($q) . "%' ";
-    } elseif (in_array($stype, $array_in_rows) and ! empty($q)) {
+    } elseif (in_array($stype, $array_in_rows) and !empty($q)) {
         $from .= " WHERE " . NV_LANG_DATA . "_" . $stype . " LIKE '%" . $db->dblikeescape($qhtml) . "%' ";
-    } elseif ($stype == 'admin_id' and ! empty($q)) {
+    } elseif ($stype == 'admin_id' and !empty($q)) {
         $sql = "SELECT userid FROM " . NV_USERS_GLOBALTABLE . " WHERE userid IN (SELECT admin_id FROM " . NV_AUTHORS_GLOBALTABLE . ") AND username LIKE '%" . $db->dblikeescape($q) . "%' OR first_name LIKE '%" . $db->dblikeescape($q) . "%' OR last_name LIKE '%" . $db->dblikeescape($q) . "%'";
         $result = $db->query($sql);
         $array_admin_id = array();
@@ -251,7 +251,7 @@ if ($checkss == md5(session_id())) {
             $array_admin_id[] = $admin_id;
         }
         $from .= " WHERE admin_id IN (0," . implode(",", $array_admin_id) . ",0)";
-    } elseif (! empty($q)) {
+    } elseif (!empty($q)) {
         $sql = "SELECT userid FROM " . NV_USERS_GLOBALTABLE . " WHERE userid IN (SELECT admin_id FROM " . NV_AUTHORS_GLOBALTABLE . ") AND username LIKE '%" . $db->dblikeescape($q) . "%' OR first_name LIKE '%" . $db->dblikeescape($q) . "%'OR last_name LIKE '%" . $db->dblikeescape($q) . "%'";
         $result = $db->query($sql);
         
@@ -266,14 +266,14 @@ if ($checkss == md5(session_id())) {
             $arr_from[] = "(" . NV_LANG_DATA . "_" . $val . " LIKE '%" . $db->dblikeescape($qhtml) . "%')";
         }
         $from .= " WHERE ( " . implode(" OR ", $arr_from);
-        if (! empty($array_admin_id)) {
+        if (!empty($array_admin_id)) {
             $from .= ' OR (admin_id IN (0,' . implode(',', $array_admin_id) . ',0))';
         }
         $from .= ' )';
     }
     
     // Tim theo loai san pham
-    if (! empty($catid)) {
+    if (!empty($catid)) {
         if (empty($q)) {
             $from .= ' WHERE';
         } else {
@@ -290,14 +290,14 @@ if ($checkss == md5(session_id())) {
     }
     
     // Tim theo ngay thang
-    if (! empty($from_time)) {
+    if (!empty($from_time)) {
         if (empty($q) and empty($catid)) {
             $from .= ' WHERE';
         } else {
             $from .= ' AND';
         }
         
-        if (! empty($from_time) and preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $from_time, $m)) {
+        if (!empty($from_time) and preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $from_time, $m)) {
             $time = mktime(0, 0, 0, $m[2], $m[1], $m[3]);
         } else {
             $time = NV_CURRENTTIME;
@@ -306,14 +306,14 @@ if ($checkss == md5(session_id())) {
         $from .= ' publtime >= ' . $time . '';
     }
     
-    if (! empty($to_time)) {
+    if (!empty($to_time)) {
         if (empty($q) and empty($catid) and empty($from_time)) {
             $from .= ' WHERE';
         } else {
             $from .= ' AND';
         }
         
-        if (! empty($to_time) and preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $to_time, $m)) {
+        if (!empty($to_time) and preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $to_time, $m)) {
             $to = mktime(23, 59, 59, $m[2], $m[1], $m[3]);
         } else {
             $to = NV_CURRENTTIME;
@@ -321,7 +321,7 @@ if ($checkss == md5(session_id())) {
         $from .= ' publtime <= ' . $to . '';
     }
 }
-if (! empty($where)) {
+if (!empty($where)) {
     $from .= ' WHERE ' . $where;
 }
 
@@ -343,7 +343,7 @@ foreach ($global_array_shops_cat as $cat) {
         $xtitle_i = '';
         if ($cat['lev'] > 0) {
             $xtitle_i .= '&nbsp;&nbsp;&nbsp;|';
-            for ($i = 1; $i <= $cat['lev']; ++ $i) {
+            for ($i = 1; $i <= $cat['lev']; ++$i) {
                 $xtitle_i .= '---';
             }
             $xtitle_i .= '>&nbsp;';
@@ -440,7 +440,7 @@ $base_url = NV_BASE_ADMINURL . 'index.php?' . NV_NAME_VARIABLE . '=' . $module_n
 $ord_sql = ($ordername == 'title' ? NV_LANG_DATA . '_title' : $ordername) . ' ' . $order;
 $theme = $site_mods[$module_name]['theme'] ? $site_mods[$module_name]['theme'] : $global_config['site_theme'];
 
-if (! $is_download) {
+if (!$is_download) {
     $db->sqlreset()
         ->select('id, listcatid, user_id, homeimgfile, homeimgthumb, ' . NV_LANG_DATA . '_title, ' . NV_LANG_DATA . '_alias, hitstotal, status, edittime, publtime, exptime, product_number, product_price, money_unit, product_unit, num_sell, username')
         ->from($from)
@@ -495,7 +495,7 @@ if (! $is_download) {
             'num_sell' => $num_sell,
             'product_unit' => isset($array_unit[$product_unit]) ? $array_unit[$product_unit][NV_LANG_DATA . '_title'] : '',
             'status' => $lang_module['status_' . $status],
-            'admin_id' => ! empty($username) ? $username : '',
+            'admin_id' => !empty($username) ? $username : '',
             'product_number' => $product_number,
             'product_price' => nv_number_format($product_price, nv_get_decimals($money_unit)),
             'money_unit' => $money_unit,
@@ -519,7 +519,7 @@ if (! $is_download) {
         
         $xtpl->parse('main.loop');
         
-        ++ $a;
+        ++$a;
     }
     
     $xtpl->assign('COUNT_PRODUCT', sprintf($lang_module['count_product'], $a, $num_items));
@@ -538,7 +538,7 @@ if (! $is_download) {
         $array_data[] = $row;
     }
     
-    if (! empty($array_data)) {
+    if (!empty($array_data)) {
         $type = 'xlsx';
         $array_title = array(
             'id' => $lang_module['phpexcel_id'],
@@ -575,12 +575,12 @@ if (! $is_download) {
         
         $columnIndex = 0; // Cot bat dau ghi du lieu
         $rowIndex = 3; // Dong bat dau ghi du lieu
-                       
+        
         // Tieu de cot
         $col = $columnIndex;
         foreach ($array_title as $title) {
             $objPHPExcel->getActiveSheet()->setCellValue(PHPExcel_Cell::stringFromColumnIndex($col) . $rowIndex, $title);
-            $col ++;
+            $col++;
         }
         
         // Hien thi danh sach cau tra loi
@@ -592,9 +592,9 @@ if (! $is_download) {
                 $col = PHPExcel_Cell::stringFromColumnIndex($j);
                 $CellValue = $data[$field];
                 $objPHPExcel->getActiveSheet()->setCellValue($col . $i, $CellValue);
-                $j ++;
+                $j++;
             }
-            $i ++;
+            $i++;
         }
         
         $highestRow = $i - 1;
@@ -683,7 +683,7 @@ while (list ($catid_i, $title_i) = each($array_list_action)) {
 $xtpl->assign('ACTION_CHECKSESS', md5($global_config['sitekey'] . session_id()));
 
 $generate_page = nv_generate_page($base_url, $num_items, $per_page, $page);
-if (! empty($generate_page)) {
+if (!empty($generate_page)) {
     $xtpl->assign('GENERATE_PAGE', $generate_page);
     $xtpl->parse('main.generate_page');
 }

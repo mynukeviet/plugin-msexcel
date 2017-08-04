@@ -2,13 +2,13 @@
 
 /**
  * @Project NUKEVIET 4.x
- * @Author VINADES.,JSC (contact@vinades.vn)
- * @Copyright (C) 2014 VINADES.,JSC. All rights reserved
+ * @Author MyNukeViet (contact@mynukeviet.com)
+ * @Copyright (C) 2016 MyNukeViet. All rights reserved
  * @License GNU/GPL version 2 or any later version
- * @Createdate 2-9-2010 14:43
+ * @Createdate 9-8-2016 14:43
  */
 
-if (! defined('NV_ADMIN')) {
+if (!defined('NV_ADMIN')) {
     die('Stop!!!');
 }
 

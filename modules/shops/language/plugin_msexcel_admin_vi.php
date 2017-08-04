@@ -2,12 +2,12 @@
 
 /**
  * @Project NUKEVIET 4.x
- * @Author mynukeviet (contact@mynukeviet.net)
- * @Copyright (C) 2016 mynukeviet. All rights reserved
+ * @Author MyNukeViet (contact@mynukeviet.com)
+ * @Copyright (C) 2016 MyNukeViet. All rights reserved
  * @License GNU/GPL version 2 or any later version
- * @Createdate 15-10-2016 10:49
+ * @Createdate 9-8-2016 14:43
  */
-if (! defined('NV_ADMIN') or ! defined('NV_MAINFILE')) {
+if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
