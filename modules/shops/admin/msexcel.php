@@ -656,10 +656,10 @@ if (!$is_download) {
         }
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $array['objType']);
-        $file_src = NV_ROOTDIR . NV_BASE_SITEURL . NV_TEMP_DIR . '/' . change_alias($lang_module['content_list']) . '.' . $array['objExt'];
+        $file_src = NV_ROOTDIR . '/' . NV_TEMP_DIR . '/' . change_alias($lang_module['content_list']) . '.' . $array['objExt'];
         $objWriter->save($file_src);
 
-        $download = new NukeViet\Files\Download($file_src, NV_ROOTDIR . NV_BASE_SITEURL . NV_TEMP_DIR);
+        $download = new NukeViet\Files\Download($file_src, NV_ROOTDIR . '/' . NV_TEMP_DIR);
         $download->download_file();
         die();
     }
